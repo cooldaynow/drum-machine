@@ -1,21 +1,22 @@
+/* TOGGLE SWITCH */
 .wrap__toggle {
-  width:50px;
-  height:25px;
-  background-color:black;
+  width: 50px;
+  height: 25px;
+  background-color: black;
   display: flex;
-  align-items:center;
+  align-items: center;
 }
 
 .toggle {
   position: relative;
-  width:15px;
-  height:15px;
-  cursor:pointer;
-  background-color:blue;
-  margin-left:5px;
-  left:0;
-  transition:all .2s linear;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  background-color: blue;
+  margin-left: 5px;
+  left: 0;
+  transition: all 0.2s linear;
 }
 .bank {
-  left:50% !important;
+  left: 50% !important;
 }

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import '../Main/index.scss';
-import ToggleSwitch from './ToggleSwitch';
-import Volume from './Volume';
+import LeftSide from './LeftSide';
+import RightSide from './RightSide';
 
 class Main extends Component {
   state = {
@@ -71,44 +71,13 @@ class Main extends Component {
       },
     ],
     bank: false,
-    volume: '0.5',
+    defaultVolume: '0.1',
     power: true,
     press: false,
     pressValue: '',
     name: 'Heater Kit',
   };
-  renderButtons = () => {
-    let src =
-      'https://s3.amazonaws.com/freecodecamp/drums/';
-    let bank = this.state.bank;
-    let power = this.state.power;
-    return this.state.buttons.map((but, i) => {
-      return (
-        <button
-          className={
-            this.state.press &&
-            but.value === this.state.pressValue
-              ? 'buttons press'
-              : 'buttons'
-          }
-          id={bank ? but.pianoName : but.drumName}
-          key={i + but.value}
-          onClick={
-            power ? this.handleButtons : undefined
-          }>
-          <audio
-            id={but.value}
-            src={
-              bank
-                ? src + but.piano
-                : src + but.drum
-            }
-          />
-          {but.value}
-        </button>
-      );
-    });
-  };
+
   delay = timeout => {
     return new Promise((resolve, reject) => {
       setTimeout(resolve, timeout);
@@ -117,9 +86,7 @@ class Main extends Component {
   handleButtons = ev => {
     let audio = ev.target.children[0];
     let name = ev.target.id;
-    audio.paused
-      ? audio.play()
-      : (audio.currentTime = 0);
+    audio.paused ? audio.play() : (audio.currentTime = 0);
     this.setState({name: name});
     this.press(audio);
   };
@@ -140,25 +107,23 @@ class Main extends Component {
       });
   };
   switchTool = () => {
-    let name = this.state.bank
-      ? 'Heater Kit'
-      : 'Smooth Piano Kit';
+    let name = this.state.bank ? 'Heater Kit' : 'Smooth Piano Kit';
     this.setState({
       bank: !this.state.bank,
       name: name,
     });
   };
   switchPower = () => {
-    let audio = [
-      ...document.getElementsByTagName('audio'),
-    ];
-    for (let track of audio) {
+    let volume = document.getElementById('vol').value;
+    let tracks = [...document.querySelectorAll('audio')];
+    for (let track of tracks) {
       if (this.state.power) {
         track.currentTime = 0;
         track.muted = true;
         track.pause();
       } else {
         track.muted = false;
+        track.volume = volume;
       }
     }
     this.setState({
@@ -166,43 +131,47 @@ class Main extends Component {
       name: '',
     });
   };
+  inicializationSet = () => {
+    let defaultVolume = this.state.defaultVolume;
+    let tracks = [...document.querySelectorAll('audio')];
+    for (let track of tracks) {
+      track.volume = defaultVolume;
+    }
+  };
+  changeVolume = e => {
+    let tracks = [...document.querySelectorAll('audio')];
+    let volume = e.target.value;
+    let renderVolume = `Volume : ${(Number(volume) * 100).toFixed()}`;
+    for (let track of tracks) {
+      track.volume = volume;
+    }
+    this.setState({name: renderVolume});
+  };
+  componentDidMount() {
+    this.inicializationSet();
+    console.log('component did mount');
+  }
   render() {
-    let power = this.state.power;
     return (
       <div className="container">
-        <div
-          id="drum-machine"
-          className="wrap__drum">
-          <div className="left__side">
-            <div className="drum__pad">
-              {this.renderButtons()}
-            </div>
-          </div>
-          <div className="right__side">
-            <div className="drum__panel">
-              <ToggleSwitch
-                name="Power"
-                toggle={power}
-                handle={this.switchPower}
-              />
-              <div className="screen">
-                {this.state.name}
-              </div>
-              <Volume
-                volume={this.state.volume}
-                disabled={!power}
-              />
-              <ToggleSwitch
-                name="Bank"
-                handle={
-                  power
-                    ? this.switchTool
-                    : undefined
-                }
-                toggle={this.state.bank}
-              />
-            </div>
-          </div>
+        <div id="drum-machine" className="wrap__drum">
+          <LeftSide
+            buttons={this.state.buttons}
+            bank={this.state.bank}
+            press={this.state.press}
+            pressValue={this.state.pressValue}
+            power={this.state.power}
+            handleButtons={this.handleButtons}
+          />
+          <RightSide
+            power={this.state.power}
+            name={this.state.name}
+            switchPower={this.switchPower}
+            switchTool={this.switchTool}
+            changeVolume={this.changeVolume}
+            defaultVolume={this.state.defaultVolume}
+            bank={this.state.bank}
+          />
         </div>
       </div>
     );
