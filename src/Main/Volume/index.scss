@@ -1,0 +1,29 @@
+.wrap__volume {
+  width:100%;
+}
+
+
+input[type=range]:focus {
+  outline: none;
+}
+
+input[type=range] {
+  -webkit-appearance: none; 
+  background-color:grey;
+  box-shadow: 1px 1px 4px #000000;
+  border:1px solid black;
+  height:5px;
+  width: 100%; 
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: 1px solid #000000;
+  height: 20px;
+  width: 10px;
+  border-radius: 3px;
+  background: blue;
+  cursor: pointer;
+  margin-top: -10px; 
+  margin-bottom: -10px;
+  box-shadow: 1px 1px 3px #000000; 
+}
