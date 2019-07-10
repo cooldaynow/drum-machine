@@ -166,7 +166,9 @@ class Main extends Component {
     return (
       <div className="container" tabIndex="0" onKeyDown={this.onKeyDown}>
         <nav className = "navigation" >
-          <a href = '#' > Drum Machine for Free Code Camp </a>
+          <a href = 'https://github.com/cooldaynow/drum-machine' title = 'Link to GitHub' >
+            Drum Machine for Free Code Camp
+          </a>
         </nav>
         <div id="drum-machine" className="wrap__drum__machine">
           <DrumPad
