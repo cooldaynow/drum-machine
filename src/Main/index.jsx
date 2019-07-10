@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import '../Main/index.scss';
-import LeftSide from './LeftSide';
-import RightSide from './RightSide';
+import DrumPad from './DrumPad';
+import DrumPanel from './DrumPanel';
 
 class Main extends Component {
   state = {
@@ -75,7 +75,7 @@ class Main extends Component {
     power: true,
     press: false,
     pressValue: '',
-    name: 'Heater Kit',
+    screen: 'Heater Kit',
   };
 
   delay = timeout => {
@@ -84,18 +84,28 @@ class Main extends Component {
     });
   };
   handleButtons = ev => {
-    let audio = ev.target.children[0];
-    let name = ev.target.id;
-    audio.paused ? audio.play() : (audio.currentTime = 0);
-    this.setState({name: name});
-    this.press(audio);
+    let track = ev.target.children[0];
+    let screen = ev.target.id;
+    track.paused ? track.play() : (track.currentTime = 0);
+    this.setState({screen: screen});
+    this.press(track);
   };
-  press = audio => {
+  onKeyDown = event => {
+    let id = String.fromCharCode(event.keyCode);
+    let track = document.getElementById(id);
+    if (track && this.state.power) {
+      let screen = track.parentNode.id;
+      track.paused ? track.play() : (track.currentTime = 0);
+      this.setState({screen: screen});
+      this.press(track);
+    }
+  };
+  press = track => {
     Promise.resolve(1)
       .then(() => {
         this.setState({
           press: !this.state.press,
-          pressValue: audio.id,
+          pressValue: track.id,
         });
         return this.delay(100);
       })
@@ -107,10 +117,10 @@ class Main extends Component {
       });
   };
   switchTool = () => {
-    let name = this.state.bank ? 'Heater Kit' : 'Smooth Piano Kit';
+    let screen = this.state.bank ? 'Heater Kit' : 'Smooth Piano Kit';
     this.setState({
       bank: !this.state.bank,
-      name: name,
+      screen: screen,
     });
   };
   switchPower = () => {
@@ -128,34 +138,35 @@ class Main extends Component {
     }
     this.setState({
       power: !this.state.power,
-      name: '',
+      screen: '',
     });
   };
   inicializationSet = () => {
     let defaultVolume = this.state.defaultVolume;
-    let tracks = [...document.querySelectorAll('audio')];
+    let tracks = document.querySelectorAll('audio');
     for (let track of tracks) {
       track.volume = defaultVolume;
     }
   };
   changeVolume = e => {
-    let tracks = [...document.querySelectorAll('audio')];
+    let tracks = document.querySelectorAll('audio');
     let volume = e.target.value;
-    let renderVolume = `Volume : ${(Number(volume) * 100).toFixed()}`;
+    let screen = `Volume : ${(Number(volume) * 100).toFixed()}`;
     for (let track of tracks) {
       track.volume = volume;
     }
-    this.setState({name: renderVolume});
+    this.setState({screen: screen});
   };
   componentDidMount() {
     this.inicializationSet();
-    console.log('component did mount');
+    console.log('Inicialization !');
   }
+
   render() {
     return (
-      <div className="container">
-        <div id="drum-machine" className="wrap__drum">
-          <LeftSide
+      <div className="container" tabIndex="0" onKeyDown={this.onKeyDown}>
+        <div id="drum-machine" className="wrap__drum__machine">
+          <DrumPad
             buttons={this.state.buttons}
             bank={this.state.bank}
             press={this.state.press}
@@ -163,9 +174,9 @@ class Main extends Component {
             power={this.state.power}
             handleButtons={this.handleButtons}
           />
-          <RightSide
+          <DrumPanel
             power={this.state.power}
-            name={this.state.name}
+            screen={this.state.screen}
             switchPower={this.switchPower}
             switchTool={this.switchTool}
             changeVolume={this.changeVolume}

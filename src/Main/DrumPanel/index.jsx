@@ -3,9 +3,9 @@ import './index.scss';
 import ToggleSwitch from '../ToggleSwitch';
 import Volume from '../Volume';
 
-function RightSide({
+function DrumPanel({
   power,
-  name,
+  screen,
   switchPower,
   switchTool,
   changeVolume,
@@ -14,10 +14,10 @@ function RightSide({
 }) {
 
   return (
-    <div className="right__side">
+    <div className="wrap__panel">
       <div className="drum__panel">
         <ToggleSwitch name="Power" toggle={power} handle={switchPower} />
-        <div className="screen">{name}</div>
+        <div className="screen">{screen}</div>
         <Volume
           disabled={!power}
           handle={changeVolume}
@@ -33,4 +33,4 @@ function RightSide({
   );
 }
 
-export default RightSide;
+export default DrumPanel;
