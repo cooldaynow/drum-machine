@@ -165,6 +165,9 @@ class Main extends Component {
   render() {
     return (
       <div className="container" tabIndex="0" onKeyDown={this.onKeyDown}>
+        <nav className = "navigation" >
+          <a href = '#' > Drum Machine for Free Code Camp </a>
+        </nav>
         <div id="drum-machine" className="wrap__drum__machine">
           <DrumPad
             buttons={this.state.buttons}

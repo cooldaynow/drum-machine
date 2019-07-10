@@ -2,6 +2,7 @@ import React from 'react';
 import './index.scss';
 import ToggleSwitch from '../ToggleSwitch';
 import Volume from '../Volume';
+import Label from '../Label';
 
 function DrumPanel({
   power,
@@ -16,6 +17,8 @@ function DrumPanel({
   return (
     <div className="wrap__panel">
       <div className="drum__panel">
+        <Label />
+
         <ToggleSwitch name="Power" toggle={power} handle={switchPower} />
         <div className="screen">{screen}</div>
         <Volume
