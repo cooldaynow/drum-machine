@@ -2,27 +2,13 @@ import React, {Component} from 'react';
 import '../Main/index.scss';
 import DrumPad from './DrumPad';
 import DrumPanel from './DrumPanel';
-import Audio from './Audio';
 import {buttons, URL} from '../constants';
 
 class Main extends Component {
   state = {
-    buttons: {
-      Q: {
-        drum: 'Heater-1.mp3',
-        piano: 'Chord_1.mp3',
-        drumName: 'Heater 1',
-        pianoName: 'Chord 1',
-      },
-      W: {
-        drum: 'Heater-2.mp3',
-        piano: 'Chord_2.mp3',
-        drumName: 'Heater 2',
-        pianoName: 'Chord 2',
-      },
-    },
+    buttons,
     bank: false,
-    defaultVolume: '0.1',
+    defaultVolume: '0.3',
     power: true,
     press: false,
     pressValue: '',
@@ -30,27 +16,10 @@ class Main extends Component {
     src: '',
   };
 
-  handleButtons = ev => {
-    let track = ev.target.children[0];
-    let screen = ev.target.id;
-    track.paused ? track.play() : (track.currentTime = 0);
-    this.setState({screen});
-    this.press(track);
-  };
-  onKeyDown = event => {
-    let id = String.fromCharCode(event.keyCode);
-    let track = document.getElementById(id);
-    if (track && this.state.power) {
-      let screen = track.parentNode.id;
-      track.paused ? track.play() : (track.currentTime = 0);
-      this.setState({screen});
-      this.press(track);
-    }
-  };
-  press = track => {
+  press = button => {
     this.setState({
       press: !this.state.press,
-      pressValue: track,
+      pressValue: button,
     });
     setTimeout(() => {
       this.setState({
@@ -67,17 +36,13 @@ class Main extends Component {
     });
   };
   switchPower = () => {
-    let volume = document.getElementById('vol').value;
-    let tracks = [...document.querySelectorAll('audio')];
-    for (let track of tracks) {
-      if (this.state.power) {
-        track.currentTime = 0;
-        track.muted = true;
-        track.pause();
-      } else {
-        track.muted = false;
-        track.volume = volume;
-      }
+    let audio = this.audio;
+    if (this.state.power) {
+      audio.currentTime = 0;
+      audio.muted = true;
+      audio.pause();
+    } else {
+      audio.muted = false;
     }
     this.setState({
       power: !this.state.power,
@@ -85,19 +50,15 @@ class Main extends Component {
     });
   };
   inicializationSet = () => {
-    let defaultVolume = this.state.defaultVolume;
-    let tracks = document.querySelectorAll('audio');
-    for (let track of tracks) {
-      track.volume = defaultVolume;
-    }
+    let defaultVolume = this.state.defaultVolume,
+      audio = this.audio;
+    audio.volume = defaultVolume;
   };
   changeVolume = e => {
-    let tracks = document.querySelectorAll('audio');
+    let audio = this.audio;
     let volume = e.target.value;
     let screen = `Volume : ${(Number(volume) * 100).toFixed()}`;
-    for (let track of tracks) {
-      track.volume = volume;
-    }
+    audio.volume = volume;
     this.setState({screen});
   };
   componentDidMount() {
@@ -105,7 +66,7 @@ class Main extends Component {
     console.log('Inicialization !');
   }
 
-  play = ev => {
+  play = async ev => {
     let button, src, screen;
     let buttons = this.state.buttons;
     let audio = this.audio;
@@ -114,21 +75,16 @@ class Main extends Component {
     } else if (ev.type === 'click') {
       button = ev.target.id;
     }
-    if (button in this.state.buttons) {
+    if (button in this.state.buttons && this.state.power) {
       src = this.state.bank
         ? URL + buttons[button].piano
         : URL + buttons[button].drum;
       screen = this.state.bank
         ? buttons[button].pianoName
         : buttons[button].drumName;
-      Promise.resolve()
-        .then(() => {
-          this.setState({src, screen});
-        })
-        .then(() => {
-          audio.paused ? audio.play() : (audio.currentTime = 0);
-          this.press(button);
-        });
+      await this.setState({src, screen});
+      audio.paused ? audio.play() : (audio.currentTime = 0);
+      this.press(button);
     }
   };
 
@@ -149,7 +105,6 @@ class Main extends Component {
             press={this.state.press}
             pressValue={this.state.pressValue}
             power={this.state.power}
-            handleButtons={this.handleButtons}
             play={this.play}
           />
           <DrumPanel
@@ -161,7 +116,7 @@ class Main extends Component {
             defaultVolume={this.state.defaultVolume}
             bank={this.state.bank}
           />
-          <Audio ref={ref => (this.audio = ref)} src={this.state.src} />
+          <audio ref={ref => (this.audio = ref)} src={this.state.src} />
         </div>
       </div>
     );

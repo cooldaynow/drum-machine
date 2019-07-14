@@ -1,8 +1,7 @@
 import React from 'react';
 import './index.scss';
 
-function Volume({disabled, handle,defaultValue}) {
-  return (
+const Volume = ({disabled, handle,defaultValue}) => (
     <div className='wrap__volume'>
       <input
         className="volume"
@@ -16,7 +15,6 @@ function Volume({disabled, handle,defaultValue}) {
         onChange ={handle} 
       />
     </div>
-  );
-}
+);
 
 export default Volume;
