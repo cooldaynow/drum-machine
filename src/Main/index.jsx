@@ -36,40 +36,26 @@ class Main extends Component {
     });
   };
   switchPower = () => {
-    let audio = this.audio;
-    if (this.state.power) {
-      audio.currentTime = 0;
-      audio.muted = true;
-      audio.pause();
-    } else {
-      audio.muted = false;
-    }
     this.setState({
       power: !this.state.power,
       screen: '',
     });
   };
   inicializationSet = () => {
-    let defaultVolume = this.state.defaultVolume,
-      audio = this.audio;
-    audio.volume = defaultVolume;
+    this.audio.volume = this.state.defaultVolume;
   };
   changeVolume = e => {
-    let audio = this.audio;
     let volume = e.target.value;
     let screen = `Volume : ${(Number(volume) * 100).toFixed()}`;
-    audio.volume = volume;
+    this.audio.volume = volume;
     this.setState({screen});
   };
-  componentDidMount() {
-    this.inicializationSet();
-    console.log('Inicialization !');
-  }
 
   play = async ev => {
     let button, src, screen;
     let buttons = this.state.buttons;
     let audio = this.audio;
+
     if (ev.type === 'keydown' && ev.keyCode > 32) {
       button = String.fromCharCode(ev.keyCode);
     } else if (ev.type === 'click') {
@@ -87,7 +73,10 @@ class Main extends Component {
       this.press(button);
     }
   };
-
+  componentDidMount() {
+    this.inicializationSet();
+    console.log('Inicialization !');
+  }
   render() {
     return (
       <div className="container" tabIndex="0" onKeyDown={this.play}>
@@ -100,8 +89,6 @@ class Main extends Component {
         </nav>
         <div id="drum-machine" className="wrap__drum__machine">
           <DrumPad
-            buttons={this.state.buttons}
-            bank={this.state.bank}
             press={this.state.press}
             pressValue={this.state.pressValue}
             power={this.state.power}

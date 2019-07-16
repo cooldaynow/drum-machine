@@ -2,13 +2,9 @@ import React from 'react';
 import './index.scss';
 
 const DrumPad = ({
-  children,
-  bank,
   power,
   press,
   pressValue,
-  buttons,
-  handleButtons,
   play
 }) => {
   return (
